@@ -111,7 +111,12 @@ export function loadReportFonts(): Promise<ReportFonts> {
             [keyof typeof fontFiles, (typeof fontFiles)[keyof typeof fontFiles]]
           >
         ).map(async ([name, source]) => {
-          const data = await readFile(path.resolve(process.cwd(), source.file));
+          const data = await readFile(
+            path.resolve(
+              /* turbopackIgnore: true */ process.cwd(),
+              source.file,
+            ),
+          );
           return [
             name,
             source.format === "woff" ? woffToTtf(data) : data,

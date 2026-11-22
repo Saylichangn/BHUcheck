@@ -10,12 +10,37 @@ const envSchema = z.object({
   DEEPSEEK_API_KEY: z.string().optional(),
 });
 
-const parsed = envSchema.safeParse(process.env);
+export type AppEnv = z.infer<typeof envSchema>;
 
-if (!parsed.success) {
-  throw new Error(
-    "Environment variables are not set. Copy .env.example to .env and fill in the values.",
-  );
+let cachedEnv: AppEnv | undefined;
+
+/**
+ * Validate server environment variables on first use instead of at module load.
+ *
+ * Next.js imports route modules while collecting page data during `next build`.
+ * Reading these values eagerly made every build require runtime secrets such as
+ * DATABASE_URL. They are still required before the first database, storage,
+ * rate-limit, or AI call, and a missing value fails with a clear message.
+ */
+export function getEnv(): AppEnv {
+  if (cachedEnv) {
+    return cachedEnv;
+  }
+
+  const parsed = envSchema.safeParse(process.env);
+
+  if (!parsed.success) {
+    const invalid = [
+      ...new Set(
+        parsed.error.issues.map((issue) => issue.path.join(".") || "environment"),
+      ),
+    ].join(", ");
+
+    throw new Error(
+      `Server environment variables are missing or invalid: ${invalid}. Set them in .env locally and in the deployment environment (for example, Vercel Project Settings -> Environment Variables).`,
+    );
+  }
+
+  cachedEnv = parsed.data;
+  return cachedEnv;
 }
-
-export const env = parsed.data;

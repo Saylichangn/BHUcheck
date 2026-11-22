@@ -1,6 +1,6 @@
 import { createHash, randomUUID } from "node:crypto";
 import { prisma } from "@/lib/db";
-import { env } from "@/lib/env";
+import { getEnv } from "@/lib/env";
 
 const loginWindow = 15 * 60 * 1000;
 const loginEmailLimit = 5;
@@ -21,7 +21,7 @@ type LimitResult = {
 
 function hashedKey(scope: string, id: string) {
   return createHash("sha256")
-    .update(`${env.RATE_LIMIT_PEPPER}:${scope}:${id}`)
+    .update(`${getEnv().RATE_LIMIT_PEPPER}:${scope}:${id}`)
     .digest("hex");
 }
 

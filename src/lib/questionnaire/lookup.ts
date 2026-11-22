@@ -1,4 +1,4 @@
-import { env } from "@/lib/env";
+import { getEnv } from "@/lib/env";
 import type { QuestionnaireQuestion } from "@/lib/domain/questionnaire";
 
 export type SourceLink = {
@@ -33,11 +33,12 @@ function clean(value: unknown) {
 }
 
 async function searchGoogle(query: string): Promise<SourceLink[] | null> {
-  if (!env.GOOGLE_CSE_KEY || !env.GOOGLE_CSE_CX) return null;
+  const { GOOGLE_CSE_KEY, GOOGLE_CSE_CX } = getEnv();
+  if (!GOOGLE_CSE_KEY || !GOOGLE_CSE_CX) return null;
 
   const url = new URL("https://www.googleapis.com/customsearch/v1");
-  url.searchParams.set("key", env.GOOGLE_CSE_KEY);
-  url.searchParams.set("cx", env.GOOGLE_CSE_CX);
+  url.searchParams.set("key", GOOGLE_CSE_KEY);
+  url.searchParams.set("cx", GOOGLE_CSE_CX);
   url.searchParams.set("q", query);
   url.searchParams.set("num", "10");
 
@@ -73,7 +74,8 @@ async function summarizeWithGemini(
   question: QuestionnaireQuestion,
   links: SourceLink[],
 ): Promise<string | null> {
-  if (!env.GEMINI_API_KEY || links.length === 0) return null;
+  const { GEMINI_API_KEY } = getEnv();
+  if (!GEMINI_API_KEY || links.length === 0) return null;
 
   const sources = links
     .map(
@@ -101,7 +103,7 @@ async function summarizeWithGemini(
   const url = new URL(
     "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
   );
-  url.searchParams.set("key", env.GEMINI_API_KEY);
+  url.searchParams.set("key", GEMINI_API_KEY);
 
   const response = await fetch(url, {
     method: "POST",

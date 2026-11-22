@@ -6,10 +6,13 @@ import {
   writeFile,
 } from "node:fs/promises";
 import path from "node:path";
-import { env } from "@/lib/env";
+import { getEnv } from "@/lib/env";
 
 function storageRoot() {
-  return path.resolve(process.cwd(), env.STORAGE_DIR);
+  return path.resolve(
+    /* turbopackIgnore: true */ process.cwd(),
+    getEnv().STORAGE_DIR,
+  );
 }
 
 export function safeStorageSegment(value: string) {
@@ -22,7 +25,10 @@ export function safeStorageSegment(value: string) {
 
 function absolutePath(relativePath: string) {
   const root = storageRoot();
-  const target = path.resolve(root, ...relativePath.split("/"));
+  const target = path.resolve(
+    /* turbopackIgnore: true */ root,
+    ...relativePath.split("/"),
+  );
 
   if (!target.startsWith(`${root}${path.sep}`)) {
     throw new Error("Invalid storage path.");

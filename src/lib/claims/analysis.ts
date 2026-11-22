@@ -1,6 +1,6 @@
 import { writeAuditLog } from "@/lib/audit";
 import { prisma } from "@/lib/db";
-import { env } from "@/lib/env";
+import { getEnv } from "@/lib/env";
 import { analysisLimited } from "@/lib/rate-limit";
 import type { AreaUnit } from "@/lib/investigations/types";
 import { parseAiAnalysis, severityToLevel, type AiAlert } from "./ai-alerts";
@@ -48,13 +48,14 @@ function buildPrompt(input: {
 }
 
 async function callDeepSeek(prompt: string): Promise<LlmResult | null> {
-  if (!env.DEEPSEEK_API_KEY) return null;
+  const apiKey = getEnv().DEEPSEEK_API_KEY;
+  if (!apiKey) return null;
 
   const response = await fetch("https://api.deepseek.com/chat/completions", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${env.DEEPSEEK_API_KEY}`,
+      Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
       model: "deepseek-chat",
@@ -96,12 +97,13 @@ async function callDeepSeek(prompt: string): Promise<LlmResult | null> {
 }
 
 async function callGemini(prompt: string): Promise<LlmResult | null> {
-  if (!env.GEMINI_API_KEY) return null;
+  const apiKey = getEnv().GEMINI_API_KEY;
+  if (!apiKey) return null;
 
   const url = new URL(
     "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
   );
-  url.searchParams.set("key", env.GEMINI_API_KEY);
+  url.searchParams.set("key", apiKey);
 
   const response = await fetch(url, {
     method: "POST",
