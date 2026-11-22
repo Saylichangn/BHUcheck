@@ -1,0 +1,11 @@
+SALE DEED
+Village: Wagholi
+Taluka: Haveli
+District: Pune
+Survey No.: 123/2
+Area: 1 hectare 20 are
+Seller: Ram Patil
+Purchaser: Sita Sharma
+Date: 10/01/2026
+Registration No.: PUNE/1234/2026
+Land Class: Agricultural

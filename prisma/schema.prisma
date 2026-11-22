@@ -1,0 +1,299 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "esm"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id             String          @id @default(cuid())
+  email          String          @unique @db.VarChar(254)
+  passwordHash   String          @db.VarChar(255)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  sessions       Session[]
+  investigations Investigation[]
+  auditLogs      AuditLog[]
+
+  @@map("users")
+}
+
+model Session {
+  id         String   @id @default(cuid())
+  userId     String
+  tokenHash  String   @unique @db.VarChar(64)
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  lastUsedAt DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("sessions")
+}
+
+model RateLimit {
+  id          String   @id @default(cuid())
+  key         String   @db.VarChar(64)
+  windowStart DateTime
+  count       Int      @default(0)
+
+  @@unique([key, windowStart])
+  @@map("rate_limits")
+}
+
+model Investigation {
+  id              String          @id @default(cuid())
+  userId          String
+  nickname        String          @db.VarChar(120)
+  state           String          @default("Maharashtra") @db.VarChar(80)
+  district        String          @db.VarChar(120)
+  taluka          String?         @db.VarChar(120)
+  village         String?         @db.VarChar(120)
+  surveyNo        String?         @db.VarChar(80)
+  intendedUse     String          @db.VarChar(40)
+  propertyType    String          @default("plot") @db.VarChar(20)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  documents       Document[]
+  comparisons     Comparison[]
+  claims          Claim[]
+  alerts          Alert[]
+  checklist       ChecklistItem[]
+  checklistReviews ChecklistReview[]
+  reports         Report[]
+  questionAnswers QuestionAnswer[]
+  auditLogs       AuditLog[]
+
+  @@index([userId, updatedAt])
+  @@map("investigations")
+}
+
+model Document {
+  id               String           @id @default(cuid())
+  investigationId  String
+  type             String           @db.VarChar(40)
+  originalName     String           @db.VarChar(255)
+  storagePath      String           @db.VarChar(500)
+  mimeType         String           @db.VarChar(80)
+  sizeBytes        Int
+  sha256           String           @db.VarChar(64)
+  pageCount        Int?
+  extractionStatus String           @default("pending") @db.VarChar(40)
+  extractedText    String?          @db.Text
+  extractionNote   String?          @db.Text
+  extractionError  String?          @db.Text
+  uploadedAt       DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  investigation    Investigation    @relation(fields: [investigationId], references: [id], onDelete: Cascade)
+  fields           ExtractedField[]
+  claimEvidence    Claim[]          @relation("claim_document")
+  alertEvidence    Alert[]          @relation("alert_document")
+  checklistHits    ChecklistItem[]  @relation("checklist_document")
+
+  @@index([investigationId, uploadedAt])
+  @@map("documents")
+}
+
+model ExtractedField {
+  id              String         @id @default(cuid())
+  documentId      String
+  fieldKey        String         @db.VarChar(40)
+  ordinal         Int            @default(0)
+  value           String         @db.Text
+  normalizedValue String?        @db.Text
+  unit            String?        @db.VarChar(20)
+  sourceText      String?        @db.Text
+  provenance      String         @default("document_analysis") @db.VarChar(40)
+  userCorrected   Boolean        @default(false)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  document        Document       @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  claimEvidence   Claim[]        @relation("claim_field")
+  alertEvidence   Alert[]        @relation("alert_field")
+
+  @@unique([documentId, fieldKey, ordinal])
+  @@index([documentId, fieldKey])
+  @@map("extracted_fields")
+}
+
+model Comparison {
+  id              String        @id @default(cuid())
+  investigationId String
+  fieldKey        String        @db.VarChar(40)
+  sourceType      String        @db.VarChar(20)
+  sourceId        String?       @db.VarChar(40)
+  value           String?       @db.Text
+  normalizedValue String?       @db.Text
+  unit            String?       @db.VarChar(20)
+  status          String        @db.VarChar(30)
+  note            String?       @db.Text
+  checkedAt       DateTime      @default(now())
+  investigation   Investigation @relation(fields: [investigationId], references: [id], onDelete: Cascade)
+
+  @@index([investigationId, fieldKey])
+  @@map("comparisons")
+}
+
+model Claim {
+  id                String          @id @default(cuid())
+  investigationId   String
+  text              String          @db.Text
+  fieldKey          String?         @db.VarChar(40)
+  claimedValue      String?         @db.Text
+  claimedUnit       String?         @db.VarChar(20)
+  status            String          @default("unverified") @db.VarChar(20)
+  evidenceDocumentId String?
+  evidenceFieldId   String?
+  rationale         String?         @db.Text
+  aiAnswer          String?         @db.Text
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  investigation     Investigation   @relation(fields: [investigationId], references: [id], onDelete: Cascade)
+  evidenceDocument  Document?       @relation("claim_document", fields: [evidenceDocumentId], references: [id], onDelete: SetNull)
+  evidenceField     ExtractedField? @relation("claim_field", fields: [evidenceFieldId], references: [id], onDelete: SetNull)
+  alerts            Alert[]
+
+  @@index([investigationId, createdAt])
+  @@map("claims")
+}
+
+model Alert {
+  id                String          @id @default(cuid())
+  investigationId   String
+  ruleKey           String          @db.VarChar(40)
+  title             String          @db.VarChar(200)
+  level             String          @db.VarChar(20)
+  tag               String          @db.VarChar(60)
+  explanation       String          @db.Text
+  evidenceDocumentId String?
+  evidenceFieldId   String?
+  evidenceValue     String?         @db.Text
+  sourceLabel       String          @db.VarChar(200)
+  documentDate      DateTime?
+  checkedAt         DateTime        @default(now())
+  whyItMatters      String          @db.Text
+  nextStep          String          @db.Text
+  professionalAdvice String         @default("none") @db.VarChar(20)
+  source            String          @default("rule") @db.VarChar(20)
+  claimId           String?
+  questionKey       String?         @db.VarChar(60)
+  resolved          Boolean         @default(false)
+  reviewedAt        DateTime?
+  investigation     Investigation   @relation(fields: [investigationId], references: [id], onDelete: Cascade)
+  claim             Claim?          @relation(fields: [claimId], references: [id], onDelete: SetNull)
+  evidenceDocument  Document?       @relation("alert_document", fields: [evidenceDocumentId], references: [id], onDelete: SetNull)
+  evidenceField     ExtractedField? @relation("alert_field", fields: [evidenceFieldId], references: [id], onDelete: SetNull)
+
+  @@unique([investigationId, ruleKey, claimId])
+  @@unique([investigationId, questionKey])
+  @@index([investigationId, level])
+  @@map("alerts")
+}
+
+model ChecklistItem {
+  id                   String        @id @default(cuid())
+  investigationId      String
+  key                  String        @db.VarChar(60)
+  label                String        @db.VarChar(200)
+  authority            String        @db.VarChar(200)
+  groupLabel           String        @db.VarChar(80)
+  requirement          String        @db.VarChar(20)
+  guidanceOnly         Boolean       @default(false)
+  tags                 String[]
+  status               String        @db.VarChar(30)
+  satisfiedByDocumentId String?
+  note                 String?       @db.Text
+  sourceSlug           String?       @db.VarChar(60)
+  sortOrder            Int           @default(0)
+  investigation        Investigation @relation(fields: [investigationId], references: [id], onDelete: Cascade)
+  satisfiedByDocument  Document?     @relation("checklist_document", fields: [satisfiedByDocumentId], references: [id], onDelete: SetNull)
+
+  @@unique([investigationId, key])
+  @@index([investigationId, sortOrder])
+  @@map("checklist_items")
+}
+
+model Report {
+  id              String        @id @default(cuid())
+  investigationId String
+  version         Int
+  fileName        String        @db.VarChar(255)
+  storagePath     String        @db.VarChar(500)
+  sizeBytes       Int
+  sha256          String        @db.VarChar(64)
+  generatedAt     DateTime      @default(now())
+  investigation   Investigation @relation(fields: [investigationId], references: [id], onDelete: Cascade)
+
+  @@unique([investigationId, version])
+  @@index([investigationId, generatedAt])
+  @@map("reports")
+}
+
+model ChecklistReview {
+  id              String        @id @default(cuid())
+  investigationId String
+  requirementKey  String        @db.VarChar(80)
+  checked         Boolean       @default(false)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  investigation   Investigation @relation(fields: [investigationId], references: [id], onDelete: Cascade)
+
+  @@unique([investigationId, requirementKey])
+  @@index([investigationId])
+  @@map("checklist_reviews")
+}
+
+model QuestionAnswer {
+  id              String        @id @default(cuid())
+  investigationId String
+  questionKey     String        @db.VarChar(60)
+  status          String        @default("unsure") @db.VarChar(20)
+  note            String?       @db.Text
+  sourcesJson     String?       @db.Text
+  aiSummary       String?       @db.Text
+  lookupAt        DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  investigation   Investigation @relation(fields: [investigationId], references: [id], onDelete: Cascade)
+
+  @@unique([investigationId, questionKey])
+  @@index([investigationId])
+  @@map("question_answers")
+}
+
+model AuditLog {
+  id              String         @id @default(cuid())
+  userId          String?
+  investigationId String?
+  action          String         @db.VarChar(40)
+  entityType      String         @db.VarChar(40)
+  entityId        String?        @db.VarChar(80)
+  metadata        Json?
+  createdAt       DateTime       @default(now())
+  user            User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
+  investigation   Investigation? @relation(fields: [investigationId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt])
+  @@index([investigationId, createdAt])
+  @@map("audit_logs")
+}
+
+model Source {
+  id              String @id @default(cuid())
+  slug            String @unique @db.VarChar(60)
+  name            String @db.VarChar(120)
+  department      String @db.VarChar(200)
+  whatItMayHold   String @db.Text
+  url             String @db.VarChar(500)
+  automaticAccess Boolean @default(false)
+  userAction      String @db.Text
+  knownLimits     String @db.Text
+  sortOrder       Int    @default(0)
+
+  @@map("sources")
+}
