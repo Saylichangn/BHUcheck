@@ -23,25 +23,25 @@ function RuleStatusList({ status }: { status: RuleStatusView[] }) {
   const skipped = status.filter((rule) => rule.status === "skipped");
 
   return (
-    <div className="mt-4 grid gap-4 sm:grid-cols-2">
-      <div>
+    <div className="mt-6 grid border border-rule-strong bg-sheet sm:grid-cols-2">
+      <div className="p-4">
         <p className="mono-label">Rules that ran</p>
         {ran.length === 0 ? (
-          <p className="mt-1 text-sm text-muted">None.</p>
+          <p className="mt-2 text-sm text-muted">None.</p>
         ) : (
-          <ul className="mt-1 space-y-1 text-sm">
+          <ul className="mt-2 space-y-1.5 text-sm">
             {ran.map((rule) => (
               <li key={rule.key}>{rule.label}</li>
             ))}
           </ul>
         )}
       </div>
-      <div>
+      <div className="border-t border-rule p-4 sm:border-l sm:border-t-0">
         <p className="mono-label">Rules that could not run</p>
         {skipped.length === 0 ? (
-          <p className="mt-1 text-sm text-muted">None.</p>
+          <p className="mt-2 text-sm text-muted">None.</p>
         ) : (
-          <ul className="mt-1 space-y-1 text-sm">
+          <ul className="mt-2 space-y-1.5 text-sm">
             {skipped.map((rule) => (
               <li key={rule.key}>
                 {rule.label} — {rule.reason}
@@ -52,6 +52,13 @@ function RuleStatusList({ status }: { status: RuleStatusView[] }) {
       </div>
     </div>
   );
+}
+
+function accentFor(level: AlertView["level"]) {
+  if (level === "critical" || level === "high") return "border-l-danger";
+  if (level === "medium" || level === "review") return "border-l-warn";
+  if (level === "checked") return "border-l-ok";
+  return "border-l-forest";
 }
 
 export function AlertsSection({
@@ -119,13 +126,13 @@ export function AlertsSection({
   return (
     <>
       <p className="mono-label">{plural(items.length, "alert")} recorded</p>
-      <div className="mt-3">
+      <div className="mt-4 space-y-4">
         {items.map((alert) => (
           <article
             key={alert.id}
-            className={`border-t border-rule py-5 first:border-t-0 first:pt-0 ${
-              alert.resolved ? "opacity-60" : ""
-            }`}
+            className={`border border-l-4 border-rule-strong bg-sheet p-5 ${accentFor(
+              alert.level,
+            )} ${alert.resolved ? "opacity-60" : ""}`}
           >
             <div className="flex flex-wrap items-center gap-2">
               <LevelBadge level={alert.level} />
@@ -139,35 +146,38 @@ export function AlertsSection({
                 {alert.ruleKey}
               </span>
             </div>
-            <h3 className="mt-2 text-xl">{alert.title}</h3>
-            <p className="mt-2 max-w-3xl text-sm leading-relaxed">
+
+            <h3 className="mt-3 max-w-3xl text-[1.45rem] leading-[1.15]">
+              {alert.title}
+            </h3>
+            <p className="mt-3 max-w-3xl text-sm leading-[1.7]">
               {alert.explanation}
             </p>
 
             {alert.claimId && alert.evidenceValue ? (
-              <p className="mt-3 max-w-3xl text-sm">
+              <p className="mt-4 max-w-3xl border-l-2 border-rule-strong pl-3 text-sm">
                 <span className="mono-label mr-2">Seller statement</span>
                 {alert.evidenceValue}
               </p>
             ) : null}
 
-            <dl className="mt-4 grid gap-4 sm:grid-cols-2">
+            <dl className="mt-5 grid gap-5 border-t border-rule pt-5 sm:grid-cols-2">
               <div>
                 <dt className="mono-label">Why it matters</dt>
-                <dd className="mt-1 text-sm leading-relaxed">
+                <dd className="mt-2 max-w-lg text-sm leading-[1.7]">
                   {alert.whyItMatters}
                 </dd>
               </div>
               <div>
                 <dt className="mono-label">Next step</dt>
-                <dd className="mt-1 text-sm leading-relaxed">
+                <dd className="mt-2 max-w-lg text-sm leading-[1.7]">
                   {alert.nextStep}
                 </dd>
               </div>
             </dl>
 
             {alert.professionalAdvice !== "none" ? (
-              <p className="mt-3 text-sm">
+              <p className="mt-4 text-sm">
                 <span className="mono-label mr-2">Professional review</span>
                 {
                   professionalAdviceLabels[
@@ -177,7 +187,7 @@ export function AlertsSection({
               </p>
             ) : null}
 
-            <p className="mt-3 text-xs text-muted">
+            <p className="mt-4 font-mono text-[10px] leading-relaxed text-muted">
               Source: {alert.sourceLabel}
               {alert.documentDate
                 ? ` · document dated ${formatDate(alert.documentDate)}`
@@ -189,12 +199,12 @@ export function AlertsSection({
               {formatDateTime(alert.checkedAt)}
             </p>
 
-            <div className="mt-3 flex flex-wrap gap-2">
+            <div className="mt-4 flex flex-wrap gap-2 border-t border-rule pt-4">
               <button
                 type="button"
                 disabled={busy === alert.id}
                 onClick={() => review(alert, "resolved")}
-                className="border border-rule-strong px-2 py-1 font-mono text-[10px] uppercase disabled:opacity-50"
+                className="btn px-3 py-2 text-[9.5px]"
               >
                 {alert.resolved ? "Resolved" : "Mark resolved"}
               </button>
@@ -202,7 +212,7 @@ export function AlertsSection({
                 type="button"
                 disabled={busy === alert.id}
                 onClick={() => review(alert, "reviewed")}
-                className="border border-rule-strong px-2 py-1 font-mono text-[10px] uppercase disabled:opacity-50"
+                className="btn px-3 py-2 text-[9.5px]"
               >
                 {alert.reviewedAt ? "Reviewed" : "Mark reviewed"}
               </button>
@@ -211,7 +221,7 @@ export function AlertsSection({
         ))}
       </div>
       <RuleStatusList status={ruleStatus} />
-      <p className="mt-2 border-t border-rule pt-3 text-xs text-muted">
+      <p className="mt-4 max-w-3xl border-t border-rule pt-4 text-xs leading-relaxed text-muted">
         AI analysis reads the submitted statement only. It does not verify the
         seller, the property or any document, and it does not declare fraud.
         Confirm potential inconsistencies with the issuing authority.

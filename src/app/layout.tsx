@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import "@fontsource/source-serif-4/latin-400.css";
+import "@fontsource/source-serif-4/latin-400-italic.css";
 import "@fontsource/source-serif-4/latin-600.css";
+import "@fontsource/source-serif-4/latin-700.css";
+import "@fontsource/source-serif-4/latin-700-italic.css";
 import "@fontsource/ibm-plex-sans/latin-400.css";
 import "@fontsource/ibm-plex-sans/latin-500.css";
 import "@fontsource/ibm-plex-sans/latin-600.css";
@@ -29,15 +32,12 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-      <body>
+      <body className="flex min-h-screen flex-col">
         <a className="skip-link" href="#main">
           Skip to content
         </a>
         <SiteHeader email={user?.email ?? null} />
-        <main
-          id="main"
-          className="mx-auto w-full max-w-[1080px] px-4 py-8 sm:px-6 sm:py-10"
-        >
+        <main id="main" className="flex-1">
           {children}
         </main>
         <SiteFooter email={user?.email ?? null} />

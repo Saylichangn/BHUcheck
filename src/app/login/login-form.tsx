@@ -14,7 +14,7 @@ export function LoginForm() {
   );
 
   return (
-    <form action={formAction} className="mt-6 space-y-4">
+    <form action={formAction} className="space-y-5">
       {state.message ? (
         <Notice tone="danger" title="Could not sign in">
           {state.message}
@@ -31,7 +31,7 @@ export function LoginForm() {
           type="email"
           autoComplete="email"
           required
-          className="field-input mt-1"
+          className="field-input mt-1.5"
         />
       </div>
 
@@ -45,11 +45,16 @@ export function LoginForm() {
           type="password"
           autoComplete="current-password"
           required
-          className="field-input mt-1"
+          className="field-input mt-1.5"
         />
       </div>
 
-      <Button type="submit" variant="primary" disabled={pending}>
+      <Button
+        type="submit"
+        variant="primary"
+        disabled={pending}
+        className="w-full"
+      >
         {pending ? "Signing in…" : "Sign in"}
       </Button>
     </form>
@@ -58,7 +63,7 @@ export function LoginForm() {
 
 export function LoginFootnote() {
   return (
-    <p className="mt-6 border-t border-rule pt-4 text-sm text-muted">
+    <p className="mt-7 border-t border-rule pt-5 text-sm leading-relaxed text-muted">
       No account yet? <Link href="/register">Create one</Link>, or{" "}
       <Link href="/sample">view the sample investigation</Link> without signing
       in.

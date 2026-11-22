@@ -28,99 +28,103 @@ export function ClaimForm({ investigationId }: { investigationId: string }) {
     <form
       ref={formRef}
       action={formAction}
-      className="border border-rule-strong bg-sheet p-4"
+      className="border border-ink bg-sheet"
     >
       <input type="hidden" name="investigationId" value={investigationId} />
-      <p className="mono-label">Record a statement from the seller</p>
-
-      <div className="mt-3">
-        <label htmlFor="claim-text" className="mono-label block">
-          What was stated
-        </label>
-        <textarea
-          id="claim-text"
-          name="text"
-          required
-          minLength={3}
-          maxLength={2000}
-          rows={3}
-          className="field-input mt-1"
-          placeholder="For example: The plot is 2,000 sq ft and has no mortgage."
-        />
+      <div className="border-b border-ink bg-forest px-5 py-3.5">
+        <p className="mono-label text-lime">Record a statement from the seller</p>
       </div>
 
-      <div className="mt-3 grid gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_8rem] sm:items-start">
+      <div className="p-5">
         <div>
-          <label htmlFor="claim-field" className="mono-label block">
-            Compare against
+          <label htmlFor="claim-text" className="mono-label block">
+            What was stated
           </label>
-          <select
-            id="claim-field"
-            name="fieldKey"
-            value={fieldKey}
-            onChange={(event) =>
-              setFieldKey(event.target.value as FieldKey | "")
-            }
-            className="field-input mt-1"
-          >
-            <option value="">Not linked to a field</option>
-            {fieldKeysForClaims.map((key) => (
-              <option key={key} value={key}>
-                {fieldLabels[key]}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label htmlFor="claim-value" className="mono-label block">
-            Value stated
-          </label>
-          <input
-            id="claim-value"
-            name="claimedValue"
-            maxLength={500}
-            className="field-input mt-1"
+          <textarea
+            id="claim-text"
+            name="text"
+            required
+            minLength={3}
+            maxLength={2000}
+            rows={3}
+            className="field-input mt-1.5"
+            placeholder="For example: The plot is 2,000 sq ft and has no mortgage."
           />
         </div>
-        {fieldKey === "area" ? (
+
+        <div className="mt-5 grid gap-5 border-t border-rule pt-5 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_8rem] sm:items-start">
           <div>
-            <label htmlFor="claim-unit" className="mono-label block">
-              Unit
+            <label htmlFor="claim-field" className="mono-label block">
+              Compare against
             </label>
             <select
-              id="claim-unit"
-              name="claimedUnit"
-              defaultValue=""
-              className="field-input mt-1"
+              id="claim-field"
+              name="fieldKey"
+              value={fieldKey}
+              onChange={(event) =>
+                setFieldKey(event.target.value as FieldKey | "")
+              }
+              className="field-input mt-1.5"
             >
-              <option value="">No unit</option>
-              {areaUnitValues.map((unit) => (
-                <option key={unit} value={unit}>
-                  {areaUnitLabels[unit]}
+              <option value="">Not linked to a field</option>
+              {fieldKeysForClaims.map((key) => (
+                <option key={key} value={key}>
+                  {fieldLabels[key]}
                 </option>
               ))}
             </select>
           </div>
+          <div>
+            <label htmlFor="claim-value" className="mono-label block">
+              Value stated
+            </label>
+            <input
+              id="claim-value"
+              name="claimedValue"
+              maxLength={500}
+              className="field-input mt-1.5"
+            />
+          </div>
+          {fieldKey === "area" ? (
+            <div>
+              <label htmlFor="claim-unit" className="mono-label block">
+                Unit
+              </label>
+              <select
+                id="claim-unit"
+                name="claimedUnit"
+                defaultValue=""
+                className="field-input mt-1.5"
+              >
+                <option value="">No unit</option>
+                {areaUnitValues.map((unit) => (
+                  <option key={unit} value={unit}>
+                    {areaUnitLabels[unit]}
+                  </option>
+                ))}
+              </select>
+            </div>
+          ) : null}
+        </div>
+
+        <p className="mt-5 text-xs leading-relaxed text-muted">
+          A statement is checked only against the values extracted from the
+          uploaded documents. Supported or contradicted does not establish who
+          is right.
+        </p>
+
+        <div className="mt-5 border-t border-rule pt-5">
+          <Button type="submit" variant="primary" disabled={pending}>
+            {pending ? "Saving and analysing…" : "Save and check statement"}
+          </Button>
+        </div>
+
+        {state.message ? (
+          <div className="mt-4" aria-live="polite">
+            <Notice tone={state.saved ? "ok" : "danger"}>{state.message}</Notice>
+          </div>
         ) : null}
       </div>
-
-      <p className="mt-3 text-xs text-muted">
-        A statement is checked only against the values extracted from the
-        uploaded documents. Supported or contradicted does not establish who is
-        right.
-      </p>
-
-      <div className="mt-3">
-        <Button type="submit" variant="primary" disabled={pending}>
-          {pending ? "Saving and analysing…" : "Save and check statement"}
-        </Button>
-      </div>
-
-      {state.message ? (
-        <div className="mt-3" aria-live="polite">
-          <Notice tone={state.saved ? "ok" : "danger"}>{state.message}</Notice>
-        </div>
-      ) : null}
     </form>
   );
 }

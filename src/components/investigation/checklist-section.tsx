@@ -75,17 +75,24 @@ export function ChecklistSection({
 
   return (
     <>
-      <p className="text-sm">
-        {checkedCount} checked · {items.length - checkedCount} unchecked
-      </p>
-      <p className="mt-1 text-xs text-muted">
-        Tap CHECKED when a requirement has been completed.
-      </p>
+      <div className="flex flex-wrap items-end justify-between gap-5 border border-ink bg-sheet px-5 py-4">
+        <div>
+          <p className="font-serif text-[1.5rem] leading-none tracking-[-0.02em]">
+            {checkedCount} checked · {items.length - checkedCount} unchecked
+          </p>
+          <p className="mt-2 text-xs text-muted">
+            Tap CHECKED when a requirement has been completed.
+          </p>
+        </div>
+        <span aria-hidden="true" className="h-3 w-3 bg-lime" />
+      </div>
 
       {visibleGroups.map((group) => (
-        <div key={group.label} className="mt-6">
-          <h3 className="text-lg">{group.label}</h3>
-          <div className="mt-2 overflow-x-auto border-t border-ink">
+        <div key={group.label} className="mt-8">
+          <h3 className="border-b border-ink pb-3 text-[1.6rem]">
+            {group.label}
+          </h3>
+          <div className="mt-3 overflow-x-auto border border-ink bg-sheet">
             <table className="data-table min-w-[760px]">
               <thead>
                 <tr>
@@ -108,28 +115,28 @@ export function ChecklistSection({
                             <Badge>Guidance step</Badge>
                           </span>
                         ) : null}
-                        <p className="mt-1 font-mono text-[10px] uppercase tracking-wide text-muted">
+                        <p className="mt-1.5 font-mono text-[9px] uppercase tracking-[0.13em] text-muted">
                           {item.requirement === "always"
                             ? "Always"
                             : "Conditional"}
                         </p>
                       </td>
                       <td>
-                        <div className="flex flex-wrap gap-1">
+                        <div className="flex flex-wrap gap-1.5">
                           {([false, true] as const).map((option) => (
                             <button
                               key={String(option)}
                               type="button"
                               aria-pressed={value === option}
                               onClick={() => setReview(item.key, option)}
-                              className={`border px-2 py-1 font-mono text-[10px] uppercase ${
+                              className={`border px-2.5 py-1.5 font-mono text-[9.5px] uppercase tracking-[0.07em] transition-colors ${
                                 option
                                   ? value === option
-                                    ? "border-ok bg-ok text-paper font-semibold"
-                                    : "border-ok bg-ok-soft text-ok"
+                                    ? "border-ok bg-ok font-semibold text-white"
+                                    : "border-ok/40 bg-ok-soft text-ok hover:border-ok"
                                   : value === option
-                                    ? "border-danger bg-danger text-paper font-semibold"
-                                    : "border-danger bg-danger-soft text-danger"
+                                    ? "border-danger bg-danger font-semibold text-white"
+                                    : "border-danger/40 bg-danger-soft text-danger hover:border-danger"
                               }`}
                             >
                               {option ? "CHECKED" : "UNCHECKED"}
@@ -143,7 +150,7 @@ export function ChecklistSection({
                         {item.sourceSlug ? (
                           <a
                             href={`/sources#${item.sourceSlug}`}
-                            className="mt-1 block"
+                            className="mt-1.5 block font-mono text-[10px] uppercase tracking-[0.06em]"
                           >
                             {sourceNames.get(item.sourceSlug) ??
                               "Government source"}
@@ -163,13 +170,13 @@ export function ChecklistSection({
         <button
           type="button"
           onClick={() => setShowAllGroups(true)}
-          className="btn mt-4"
+          className="btn mt-6"
         >
           MORE
         </button>
       ) : null}
 
-      <p className="mt-4 text-xs text-muted">
+      <p className="mt-5 max-w-3xl border-t border-rule pt-4 text-xs leading-relaxed text-muted">
         CHECKED only means you say the requirement is completed. It does not
         mean a document is genuine or sufficient. Guidance steps happen outside
         BHUcheck.

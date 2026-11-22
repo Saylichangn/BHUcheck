@@ -49,23 +49,31 @@ export default async function InvestigationsPage() {
   const investigations = await listInvestigations(user.id);
 
   return (
-    <div>
-      <div className="flex flex-wrap items-end justify-between gap-3">
+    <div className="page-shell page-body">
+      <header className="grid gap-8 border-b border-ink pb-9 md:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] md:items-end">
         <div>
-          <p className="mono-label">Your work</p>
-          <h1 className="mt-2 text-3xl">Investigations</h1>
-          <p className="mt-1 text-sm text-muted">
+          <p className="eyebrow text-forest">Your work</p>
+          <h1 className="mt-5 max-w-3xl text-[clamp(3rem,7vw,5.6rem)] leading-[0.92]">
+            Investigations
+          </h1>
+        </div>
+        <div className="md:pb-1">
+          <p className="max-w-md text-[14px] leading-[1.7] text-muted">
             Each investigation holds its own documents, comparisons, seller
             statements, alerts and checklist.
           </p>
+          <ButtonLink
+            href="/investigations/new"
+            variant="primary"
+            className="mt-6"
+          >
+            New investigation
+          </ButtonLink>
         </div>
-        <ButtonLink href="/investigations/new" variant="primary">
-          New investigation
-        </ButtonLink>
-      </div>
+      </header>
 
       {investigations.length === 0 ? (
-        <div className="mt-8 space-y-4">
+        <div className="mt-10 max-w-3xl space-y-6">
           <Notice title="No investigations yet">
             Start with the district and the survey number you are checking.
             Upload whatever copies you already have; more documents can be
@@ -79,11 +87,14 @@ export default async function InvestigationsPage() {
         </div>
       ) : (
         <>
-          <p className="mono-label mt-8">
-            {plural(investigations.length, "investigation")}
-          </p>
-          <div className="mt-2 overflow-x-auto border-t border-ink">
-            <table className="data-table min-w-[820px]">
+          <div className="mt-10 flex items-end justify-between gap-4 border-t border-ink pt-4">
+            <p className="mono-label">
+              {plural(investigations.length, "investigation")}
+            </p>
+            <span className="hidden h-2 w-2 bg-lime sm:block" />
+          </div>
+          <div className="mt-2 overflow-x-auto">
+            <table className="data-table min-w-[860px]">
               <thead>
                 <tr>
                   <th scope="col">Name</th>
@@ -101,7 +112,7 @@ export default async function InvestigationsPage() {
                     <td>
                       <Link
                         href={`/investigations/${investigation.id}`}
-                        className="font-medium"
+                        className="row-link font-medium"
                       >
                         {investigation.nickname}
                       </Link>
@@ -127,7 +138,7 @@ export default async function InvestigationsPage() {
               </tbody>
             </table>
           </div>
-          <p className="mt-3 text-xs text-muted">
+          <p className="mt-4 max-w-3xl text-xs leading-relaxed text-muted">
             Alert counts reflect the last recalculation from the uploaded
             documents and entered details. No alerts is not a clearance.
           </p>

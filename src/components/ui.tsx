@@ -80,22 +80,23 @@ export function Section({
   className?: string;
 }) {
   return (
-    <section
-      id={id}
-      className={classes("mt-10 border-t border-ink/60 pt-5", className)}
-    >
-      <div className="flex flex-wrap items-start justify-between gap-3">
+    <section id={id} className={classes("section", className)}>
+      <div className="section-head">
         <div>
-          <h2 className="text-2xl">{title}</h2>
+          <h2 className="section-title">{title}</h2>
+        </div>
+        <div className="flex flex-wrap items-start justify-between gap-4">
           {description ? (
-            <p className="mt-1 max-w-3xl text-sm text-muted">{description}</p>
+            <p className="section-description">{description}</p>
+          ) : (
+            <span />
+          )}
+          {actions ? (
+            <div className="flex flex-wrap items-center gap-2">{actions}</div>
           ) : null}
         </div>
-        {actions ? (
-          <div className="flex flex-wrap items-center gap-2">{actions}</div>
-        ) : null}
       </div>
-      <div className="mt-4">{children}</div>
+      <div className="mt-7">{children}</div>
     </section>
   );
 }
@@ -109,37 +110,26 @@ export function Notice({
   title?: string;
   children: ReactNode;
 }) {
-  const border =
-    tone === "warn"
-      ? "border-warn"
-      : tone === "danger"
-        ? "border-danger"
-        : tone === "ok"
-          ? "border-ok"
-          : "border-rule-strong";
-  const background =
-    tone === "warn"
-      ? "bg-warn-soft"
-      : tone === "danger"
-        ? "bg-danger-soft"
-        : tone === "ok"
-          ? "bg-ok-soft"
-          : "bg-sheet";
-
   return (
-    <div className={`border border-l-4 px-4 py-3 ${border} ${background}`}>
+    <div className={`notice notice-${tone}`}>
       {title ? (
-        <p className="mono-label mb-1 text-ink">{title}</p>
+        <p className="mono-label mb-1 text-current">{title}</p>
       ) : null}
       <div className="text-sm leading-relaxed">{children}</div>
     </div>
   );
 }
 
-export function EmptyRow({ children, colSpan }: { children: ReactNode; colSpan: number }) {
+export function EmptyRow({
+  children,
+  colSpan,
+}: {
+  children: ReactNode;
+  colSpan: number;
+}) {
   return (
     <tr>
-      <td colSpan={colSpan} className="text-sm text-muted">
+      <td colSpan={colSpan} className="py-8 text-sm text-muted">
         {children}
       </td>
     </tr>

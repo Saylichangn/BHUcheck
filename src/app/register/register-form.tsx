@@ -14,7 +14,7 @@ export function RegisterForm() {
   );
 
   return (
-    <form action={formAction} className="mt-6 space-y-4">
+    <form action={formAction} className="space-y-5">
       {state.message ? (
         <Notice tone="danger" title="Could not create the account">
           {state.message}
@@ -31,7 +31,7 @@ export function RegisterForm() {
           type="email"
           autoComplete="email"
           required
-          className="field-input mt-1"
+          className="field-input mt-1.5"
         />
       </div>
 
@@ -46,9 +46,9 @@ export function RegisterForm() {
           autoComplete="new-password"
           required
           minLength={10}
-          className="field-input mt-1"
+          className="field-input mt-1.5"
         />
-        <p className="mt-1 text-xs text-muted">At least 10 characters.</p>
+        <p className="mt-1.5 text-xs text-muted">At least 10 characters.</p>
       </div>
 
       <div>
@@ -61,11 +61,16 @@ export function RegisterForm() {
           type="password"
           autoComplete="new-password"
           required
-          className="field-input mt-1"
+          className="field-input mt-1.5"
         />
       </div>
 
-      <Button type="submit" variant="primary" disabled={pending}>
+      <Button
+        type="submit"
+        variant="primary"
+        disabled={pending}
+        className="w-full"
+      >
         {pending ? "Creating…" : "Create account"}
       </Button>
     </form>
@@ -74,7 +79,7 @@ export function RegisterForm() {
 
 export function RegisterFootnote() {
   return (
-    <p className="mt-6 border-t border-rule pt-4 text-sm text-muted">
+    <p className="mt-7 border-t border-rule pt-5 text-sm leading-relaxed text-muted">
       Already have an account? <Link href="/login">Sign in</Link>. There is no
       email confirmation or password reset in this version.
     </p>

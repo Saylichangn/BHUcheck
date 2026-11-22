@@ -66,7 +66,7 @@ export function UploadNotice({ result }: { result: string | null }) {
   if (!notice) return null;
 
   return (
-    <div className="mt-4">
+    <div className="mb-5">
       <Notice tone={notice.tone} title={notice.title}>
         {notice.message}
       </Notice>
@@ -91,10 +91,13 @@ export function DocumentsSection({
         action={`/api/investigations/${investigationId}/documents`}
         method="post"
         encType="multipart/form-data"
-        className="mt-4 border border-rule-strong bg-sheet p-4"
+        className="border border-ink bg-sheet"
       >
-        <p className="mono-label">Upload a document</p>
-        <div className="mt-3 grid gap-3 sm:grid-cols-[minmax(0,16rem)_minmax(0,1fr)_auto] sm:items-end">
+        <div className="border-b border-ink bg-forest px-5 py-3.5">
+          <p className="mono-label text-lime">Upload a document</p>
+        </div>
+        <div className="p-5">
+          <div className="grid gap-5 sm:grid-cols-[minmax(0,16rem)_minmax(0,1fr)] sm:items-start">
           <div>
             <label htmlFor="document-type" className="mono-label block">
               Document type
@@ -129,15 +132,18 @@ export function DocumentsSection({
               className="field-input mt-1 bg-sheet text-sm"
             />
           </div>
-          <Button type="submit" variant="primary">
-            Upload and read
-          </Button>
+          </div>
+          <div className="mt-5 flex flex-wrap items-end justify-between gap-4 border-t border-rule pt-5">
+            <p className="max-w-xl text-xs leading-relaxed text-muted">
+              The file type is checked from the file contents, not the file
+              name. The limit is {formatFileSize(maxUploadBytes)}. Scanned PDFs
+              are read with OCR for up to the first 8 pages.
+            </p>
+            <Button type="submit" variant="primary">
+              Upload and read
+            </Button>
+          </div>
         </div>
-        <p className="mt-2 text-xs text-muted">
-          The file type is checked from the file contents, not the file name.
-          The limit is {formatFileSize(maxUploadBytes)}. Scanned PDFs are read
-          with OCR for up to the first 8 pages.
-        </p>
       </form>
 
       {documents.length === 0 ? (
@@ -148,7 +154,7 @@ export function DocumentsSection({
           </Notice>
         </div>
       ) : (
-        <div className="mt-5 overflow-x-auto border-t border-ink">
+        <div className="mt-5 overflow-x-auto border border-ink bg-sheet">
           <table className="data-table min-w-[760px]">
             <thead>
               <tr>
@@ -210,7 +216,11 @@ export function DocumentsSection({
                         name="documentId"
                         value={document.id}
                       />
-                      <Button type="submit" variant="danger">
+                      <Button
+                        type="submit"
+                        variant="danger"
+                        className="px-2.5 py-1.5 text-[9.5px]"
+                      >
                         Remove
                       </Button>
                     </form>
@@ -225,9 +235,9 @@ export function DocumentsSection({
       {documents.map((document) => (
         <details
           key={document.id}
-          className="mt-4 border border-rule-strong bg-sheet"
+          className="mt-4 border border-ink bg-sheet"
         >
-          <summary className="flex flex-wrap items-center justify-between gap-2 px-4 py-3">
+          <summary className="flex flex-wrap items-center justify-between gap-2 px-5 py-4">
             <span className="text-sm font-medium">
               Extracted values ·{" "}
               {isDocumentType(document.type)
@@ -243,7 +253,7 @@ export function DocumentsSection({
               </span>
             </span>
           </summary>
-          <div className="border-t border-rule px-4 pb-4">
+          <div className="border-t border-rule px-5 pb-5">
             {document.fields.length === 0 ? (
               <p className="mt-3 text-sm text-muted">
                 No values were read from this file. Add the details manually if

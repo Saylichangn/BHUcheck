@@ -22,30 +22,49 @@ export default async function DeleteInvestigationPage({
   if (!investigation) notFound();
 
   return (
-    <div className="max-w-xl">
-      <p className="mono-label">Permanent action</p>
-      <h1 className="mt-2 text-3xl">Delete “{investigation.nickname}”?</h1>
-      <p className="mt-3 text-sm leading-relaxed">
-        This deletes the investigation, its uploaded document files, extracted
-        values, seller statements, alerts, checklist and any generated reports.
-        The stored files are removed from disk. This cannot be undone.
-      </p>
+    <div className="page-shell page-body">
+      <div className="max-w-3xl">
+        <p className="eyebrow text-danger">Permanent action</p>
+        <h1 className="mt-5 text-[clamp(2.8rem,7vw,5rem)] leading-[0.92]">
+          Delete “{investigation.nickname}”?
+        </h1>
+        <p className="mt-6 max-w-2xl text-[15px] leading-[1.75]">
+          This deletes the investigation, its uploaded document files, extracted
+          values, seller statements, alerts, checklist and any generated
+          reports. The stored files are removed from disk. This cannot be
+          undone.
+        </p>
 
-      <form action={deleteInvestigationAction} className="mt-6 space-y-4">
-        <input type="hidden" name="investigationId" value={investigation.id} />
-        <label className="flex items-start gap-2 text-sm">
-          <input type="checkbox" required className="mt-1" />
-          <span>I understand that the uploaded files will be deleted.</span>
-        </label>
-        <div className="flex flex-wrap gap-2">
-          <Button type="submit" variant="danger">
-            Delete investigation
-          </Button>
-          <Link href={`/investigations/${investigation.id}`} className="btn no-underline">
-            Cancel
-          </Link>
-        </div>
-      </form>
+        <form
+          action={deleteInvestigationAction}
+          className="mt-8 max-w-2xl border border-danger/60 bg-sheet p-5 sm:p-6"
+        >
+          <input
+            type="hidden"
+            name="investigationId"
+            value={investigation.id}
+          />
+          <label className="flex items-start gap-3 border border-rule bg-paper p-4 text-sm leading-relaxed">
+            <input
+              type="checkbox"
+              required
+              className="mt-0.5 h-4 w-4 shrink-0 accent-danger"
+            />
+            <span>I understand that the uploaded files will be deleted.</span>
+          </label>
+          <div className="mt-5 flex flex-wrap items-center gap-3 border-t border-rule pt-5">
+            <Button type="submit" variant="danger">
+              Delete investigation
+            </Button>
+            <Link
+              href={`/investigations/${investigation.id}`}
+              className="btn no-underline"
+            >
+              Cancel
+            </Link>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

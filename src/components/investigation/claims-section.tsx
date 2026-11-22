@@ -30,7 +30,7 @@ export function ClaimsSection({
           read from the uploaded documents.
         </Notice>
       ) : (
-        <div className="overflow-x-auto border-t border-ink">
+        <div className="overflow-x-auto border border-ink bg-sheet">
           <table className="data-table min-w-[820px]">
             <thead>
               <tr>
@@ -69,7 +69,7 @@ export function ClaimsSection({
                           href={`/api/documents/${claim.evidenceDocumentId}/file`}
                           target="_blank"
                           rel="noreferrer"
-                          className="mt-1 block"
+                          className="mt-1.5 block font-mono text-[10px] uppercase tracking-[0.06em]"
                         >
                           View the document used
                         </a>
@@ -83,7 +83,11 @@ export function ClaimsSection({
                           value={investigationId}
                         />
                         <input type="hidden" name="claimId" value={claim.id} />
-                        <Button type="submit" variant="danger">
+                        <Button
+                          type="submit"
+                          variant="danger"
+                          className="px-2.5 py-1.5 text-[9.5px]"
+                        >
                           Remove
                         </Button>
                       </form>
@@ -93,10 +97,10 @@ export function ClaimsSection({
                     <tr>
                       <td
                         colSpan={6}
-                        className="border-t border-rule bg-sheet p-3 text-sm"
+                        className="border-t border-rule bg-accent-soft/50 p-4 text-sm"
                       >
                         <p className="mono-label">AI response</p>
-                        <p className="mt-1 leading-relaxed">{claim.aiAnswer}</p>
+                        <p className="mt-2 leading-[1.7]">{claim.aiAnswer}</p>
                       </td>
                     </tr>
                   ) : null}
@@ -111,7 +115,7 @@ export function ClaimsSection({
         <ClaimForm investigationId={investigationId} />
       </div>
 
-      <p className="mt-3 text-xs text-muted">
+      <p className="mt-4 max-w-3xl text-xs leading-relaxed text-muted">
         Supported means the uploaded documents agree with the statement.
         Contradicted means an extracted value differs. Neither result decides
         whether the statement is true.

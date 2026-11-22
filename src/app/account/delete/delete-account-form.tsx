@@ -17,20 +17,23 @@ export function DeleteAccountForm() {
   );
 
   return (
-    <form action={formAction} className="mt-6 max-w-xl space-y-5">
+    <form
+      action={formAction}
+      className="mt-8 max-w-2xl space-y-5 border border-danger/60 bg-sheet p-5 sm:p-6"
+    >
       {state.message ? (
         <Notice tone="danger" title="Account not deleted">
           {state.message}
         </Notice>
       ) : null}
 
-      <label className="flex items-start gap-2 text-sm">
+      <label className="flex items-start gap-3 border border-rule bg-paper p-4 text-sm leading-relaxed">
         <input
           type="checkbox"
           name="confirm"
           value="yes"
           required
-          className="mt-1"
+          className="mt-0.5 h-4 w-4 shrink-0 accent-danger"
         />
         <span>
           I understand that my account, investigations, documents, extracted
@@ -39,7 +42,7 @@ export function DeleteAccountForm() {
         </span>
       </label>
 
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="flex flex-wrap items-center gap-3 border-t border-rule pt-5">
         <Button type="submit" variant="danger" disabled={pending}>
           {pending ? "Deleting…" : "Delete my account and all data"}
         </Button>

@@ -60,12 +60,12 @@ export function AddFieldForm({
     <form
       ref={formRef}
       action={formAction}
-      className="mt-4 border border-rule bg-paper p-3"
+      className="mt-5 border border-rule-strong bg-paper p-4"
     >
       <input type="hidden" name="investigationId" value={investigationId} />
       <input type="hidden" name="documentId" value={documentId} />
       <p className="mono-label">Add a value manually</p>
-      <div className="mt-2 grid gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_8rem_auto] sm:items-end">
+      <div className="mt-3 grid gap-4 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_8rem_auto] sm:items-end">
         <div>
           <label htmlFor={`fieldKey-${documentId}`} className="mono-label block">
             Field
@@ -106,7 +106,11 @@ export function AddFieldForm({
         ) : (
           <div aria-hidden="true" />
         )}
-        <Button type="submit" disabled={pending}>
+        <Button
+          type="submit"
+          disabled={pending}
+          className="px-3 py-2 text-[9.5px]"
+        >
           {pending ? "Adding…" : "Add value"}
         </Button>
       </div>
@@ -188,10 +192,20 @@ export function FieldRow({
               </p>
             ) : null}
             <div className="flex flex-wrap gap-2">
-              <Button type="submit" variant="primary" disabled={pending}>
+              <Button
+                type="submit"
+                variant="primary"
+                disabled={pending}
+                className="px-3 py-1.5 text-[9.5px]"
+              >
                 {pending ? "Saving…" : "Save"}
               </Button>
-              <Button onClick={() => setEditing(false)}>Cancel</Button>
+              <Button
+                onClick={() => setEditing(false)}
+                className="px-3 py-1.5 text-[9.5px]"
+              >
+                Cancel
+              </Button>
             </div>
             {state.message ? (
               <p
@@ -222,7 +236,12 @@ export function FieldRow({
       <td>
         <div className="flex flex-wrap gap-2">
           {!editing ? (
-            <Button onClick={() => setEditing(true)}>Edit</Button>
+            <Button
+              onClick={() => setEditing(true)}
+              className="px-2.5 py-1.5 text-[9.5px]"
+            >
+              Edit
+            </Button>
           ) : null}
           <form action={deleteFieldAction}>
             <input
@@ -231,7 +250,11 @@ export function FieldRow({
               value={investigationId}
             />
             <input type="hidden" name="fieldId" value={field.id} />
-            <Button type="submit" variant="danger">
+            <Button
+              type="submit"
+              variant="danger"
+              className="px-2.5 py-1.5 text-[9.5px]"
+            >
               Remove
             </Button>
           </form>

@@ -40,20 +40,23 @@ export function ReportsSection({
   return (
     <>
       {notice ? (
-        <div className="mb-4">
+        <div className="mb-5">
           <Notice tone={notice.tone} title={notice.title}>
             {notice.message}
           </Notice>
         </div>
       ) : null}
 
-      <div className="flex flex-wrap items-center justify-between gap-3 border border-rule-strong bg-sheet p-4">
-        <p className="max-w-xl text-sm">
+      <div className="flex flex-wrap items-center justify-between gap-5 border border-ink border-l-4 border-l-lime bg-sheet p-5">
+        <p className="max-w-xl text-sm leading-[1.7]">
           Generate a dated PDF of the details, documents, comparison, seller
           statements, alerts and checklist. Generate a new version after the
           investigation changes.
         </p>
-        <form action={`/api/investigations/${investigationId}/reports`} method="post">
+        <form
+          action={`/api/investigations/${investigationId}/reports`}
+          method="post"
+        >
           <Button type="submit" variant="primary">
             Generate PDF report
           </Button>
@@ -63,7 +66,7 @@ export function ReportsSection({
       {reports.length === 0 ? (
         <p className="mt-4 text-sm text-muted">No reports generated yet.</p>
       ) : (
-        <div className="mt-4 overflow-x-auto border-t border-ink">
+        <div className="mt-4 overflow-x-auto border border-ink bg-sheet">
           <table className="data-table min-w-[600px]">
             <thead>
               <tr>
@@ -84,7 +87,7 @@ export function ReportsSection({
                   <td>
                     <a
                       href={`/api/reports/${report.id}`}
-                      className="btn no-underline"
+                      className="btn px-3 py-1.5 text-[9.5px] no-underline"
                     >
                       Download PDF
                     </a>
