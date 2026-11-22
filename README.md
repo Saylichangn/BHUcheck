@@ -43,3 +43,6 @@ npm run typecheck
 npm test
 npm run build
 ```
+or
+### Directly visit the site:
+Open https://bh-ucheck-6f53.vercel.app/login
