@@ -6,7 +6,7 @@ coverage/
 .env
 .env.*
 !.env.example
-storage/
+/storage/
 src/generated/
 *.tsbuildinfo
 npm-debug.log*
